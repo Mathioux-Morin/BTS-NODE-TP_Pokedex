@@ -1,4 +1,4 @@
-const API_URL = 'http://172.16.198.1:5001';
+const API_URL = 'http://172.16.198.254:5001';
 
 // Gestion des onglets
 document.querySelectorAll('.tab-btn').forEach(btn => {
