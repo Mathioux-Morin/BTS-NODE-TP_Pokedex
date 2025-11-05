@@ -143,7 +143,7 @@ app.get('/api/pokemon/hasard/:nbr', (req, res) => {
 // Lancement du serveur et attendre
 app.listen(
 	PORT,
-	'172.16.198.1',
+	'172.16.198.254',
 	() => {
 		console.log('Server Pokedex is listening on ' + PORT);
 	}
