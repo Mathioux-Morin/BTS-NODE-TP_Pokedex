@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100;300;400;900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +8,11 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-image: url("../images/background.jpg");
+    background-repeat: repeat;
+    background-size: auto;
+    background-attachment: scroll;
+    background-position: top left;
     min-height: 100vh;
     padding: 20px;
 }
@@ -18,14 +24,24 @@ body {
 
 header {
     text-align: center;
-    color: white;
+    color: #FFCB05;
+    font-weight: bold;
     margin-bottom: 30px;
 }
 
 h1 {
-    font-size: 3em;
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+    font-family: 'Londrina Solid', sans-serif;
+    font-size: 6em;
+    -webkit-text-stroke: 5px #3D7DCA;
+    text-shadow: 2px 2px 4px #003A70;
     margin-bottom: 10px;
+}
+
+p {
+    font-family: 'Londrina Solid', sans-serif;
+    font-size: 4em;
+    -webkit-text-stroke: 4px #3D7DCA;
+    text-shadow: 2px 2px 4px #003A70;
 }
 
 .search-container {
@@ -54,7 +70,7 @@ h1 {
 }
 
 .tab-btn.active {
-    background: #667eea;
+    background: rgb(2, 38, 241);
     color: white;
 }
 
@@ -68,6 +84,27 @@ h1 {
 
 .search-content.active {
     display: block;
+}
+
+.json-link-container {
+  background-color: black;
+  padding: 10px;
+  border-radius: 5px;
+  width: fit-content;
+}
+
+#json-link {
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+#json-link a {
+  color: white;
+  text-decoration: none;
+}
+
+#json-link a:hover {
+  text-decoration: underline;
 }
 
 .input-group {
@@ -88,7 +125,7 @@ input {
 }
 
 button {
-    background: #667eea;
+    background: rgb(2, 38, 241);
     color: white;
     border: none;
     cursor: pointer;
@@ -164,6 +201,8 @@ button:hover {
     justify-content: space-between;
     margin-bottom: 5px;
     font-size: 14px;
+    font-weight: bold;
+    color: #333;
 }
 
 .loading {
@@ -181,7 +220,6 @@ button:hover {
     margin-bottom: 20px;
 }
 
-/* Types de Pokémon */
 /* Types de Pokémon */
 .type-Normal, .type-normal { background: #A8A878; }
 .type-Fire, .type-fire { background: #F08030; }

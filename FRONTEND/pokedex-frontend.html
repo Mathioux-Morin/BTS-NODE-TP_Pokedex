@@ -5,18 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokédex</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Fallback en cas de problème avec le CSS -->
-    <style>
-        /* Styles minimum pour voir si le HTML est bien chargé */
-        body { background: #667eea; color: white; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; }
-    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🔴 Pokédex 🔵</h1>
+            <h1> POKEDEX </h1>
             <p>Explorez l'univers des Pokémon</p>
         </header>
 
@@ -48,8 +41,14 @@
 
             <div id="tab-random" class="search-content">
                 <div class="input-group">
-                    <input type="number" id="random-count" placeholder="Nombre de Pokémon" value="6" min="1" max="20">
+                    <input type="number" id="random-count" placeholder="Nombre de Pokémon (ex: 6)">
                     <button onclick="getRandomPokemon()">Générer</button>
+                </div>
+            </div>
+
+            <div class="json-link-container">
+                <div id="json-link">
+                    Lien API: <a href="#" target="_blank">Aucune requête effectuée</a>
                 </div>
             </div>
         </div>

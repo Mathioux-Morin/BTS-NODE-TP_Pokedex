@@ -34,6 +34,12 @@ function showLoading() {
     document.getElementById('results').innerHTML = '<div class="loading">Chargement...</div>';
 }
 
+function updateJsonLink(url) {
+    const jsonLinkElement = document.querySelector('#json-link a');
+    jsonLinkElement.href = url;
+    jsonLinkElement.textContent = url;
+}
+
 function createPokemonCard(pokemon) {
     // Traduction des types en français
     const typeTranslations = {
@@ -63,10 +69,12 @@ function createPokemonCard(pokemon) {
 
     const stats = pokemon.base ? `
         <div class="pokemon-stats">
-            <div class="stat-item"><span>PV:</span><span>${pokemon.base.HP || 0}</span></div>
-            <div class="stat-item"><span>Attaque:</span><span>${pokemon.base.Attack || 0}</span></div>
-            <div class="stat-item"><span>Défense:</span><span>${pokemon.base.Defense || 0}</span></div>
-            <div class="stat-item"><span>Vitesse:</span><span>${pokemon.base.Speed || 0}</span></div>
+            <div class="stat-item"><span>PV:</span><span style="font-size: 17px;">${pokemon.base.HP || 0}</span></div>
+            <div class="stat-item"><span>Attaque:</span><span style="font-size: 17px;">${pokemon.base.Attack || 0}</span></div>
+            <div class="stat-item"><span>Défense:</span><span style="font-size: 17px;">${pokemon.base.Defense || 0}</span></div>
+            <div class="stat-item"><span>Attaque Spé:</span><span style="font-size: 17px;">${pokemon.base["Sp. Attack"] || 0}</span></div>
+            <div class="stat-item"><span>Défense Spé:</span><span style="font-size: 17px;">${pokemon.base["Sp. Defense"] || 0}</span></div>
+            <div class="stat-item"><span>Vitesse:</span><span style="font-size: 17px;">${pokemon.base.Speed || 0}</span></div>
         </div>
     ` : '';
 
@@ -94,11 +102,13 @@ function displayPokemon(data) {
 
 async function loadAllPokemon() {
     showLoading();
+    const url = `${API_URL}/api/pokemon`;
     try {
-        const response = await fetch(`${API_URL}/api/pokemon`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Erreur de chargement');
         const data = await response.json();
         displayPokemon(data);
+        updateJsonLink(url);
     } catch (error) {
         showError('Impossible de charger les Pokémon. Vérifiez que le serveur est lancé.');
         document.getElementById('results').innerHTML = '';
@@ -113,11 +123,13 @@ async function searchById() {
     }
 
     showLoading();
+    const url = `${API_URL}/api/pokemon/id/${id}`;
     try {
-        const response = await fetch(`${API_URL}/api/pokemon/id/${id}`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Pokémon non trouvé');
         const data = await response.json();
         displayPokemon(data);
+        updateJsonLink(url);
     } catch (error) {
         showError(`Aucun Pokémon trouvé avec l'ID ${id}`);
         document.getElementById('results').innerHTML = '';
@@ -132,11 +144,13 @@ async function searchByName() {
     }
 
     showLoading();
+    const url = `${API_URL}/api/pokemon/nom/${encodeURIComponent(name)}`;
     try {
-        const response = await fetch(`${API_URL}/api/pokemon/nom/${encodeURIComponent(name)}`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Pokémon non trouvé');
         const data = await response.json();
         displayPokemon(data);
+        updateJsonLink(url);
     } catch (error) {
         showError(`Aucun Pokémon trouvé avec le nom "${name}"`);
         document.getElementById('results').innerHTML = '';
@@ -146,11 +160,13 @@ async function searchByName() {
 async function getRandomPokemon() {
     const count = document.getElementById('random-count').value || 6;
     showLoading();
+    const url = `${API_URL}/api/pokemon/hasard/${count}`;
     try {
-        const response = await fetch(`${API_URL}/api/pokemon/hasard/${count}`);
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Erreur de chargement');
         const data = await response.json();
         displayPokemon(data);
+        updateJsonLink(url);
     } catch (error) {
         showError('Impossible de charger les Pokémon aléatoires');
         document.getElementById('results').innerHTML = '';
