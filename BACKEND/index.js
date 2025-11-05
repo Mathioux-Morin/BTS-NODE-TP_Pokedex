@@ -1,7 +1,7 @@
 /**
 * Serveur Backend Pokedex
 */
-//console.log ("Hello World!");
+
 // Définir l'emplacement des fichiers bases de données
 const POKEDEX_SRC = "./DATA/pokedex.json";
 // Définir l'emplacement des images
@@ -13,33 +13,38 @@ const PORT = 5001;
 const fs = require('fs');
 // npm install express
 const express = require('express');
+const path = require('path');
 const app = express();
 
-app.get('/', (req, res) => {
-    fs.readFile('./DATA/pokedex.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error("Erreur de lecture du fichier :", err);
-            res.status(500).send("Erreur serveur : impossible de lire le pokedex.");
-        } else {
-            const pokedex = JSON.parse(data);
-            res.json(pokedex);
-        }
-    });
+// Configuration CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
 });
 
-app.get('/hasard', (req, res) => {
-    fs.readFile('./DATA/pokedex.json', 'utf8', (err, data) => {
+// Servir les fichiers statiques
+app.use(express.static(path.join(__dirname, '../FRONTEND')));  // Servir tous les fichiers du frontend
+app.use('/images', express.static(path.join(__dirname, 'FILES/images')));
+app.use('/sprites', express.static(path.join(__dirname, 'FILES/sprites')));
+app.use('/thumbnails', express.static(path.join(__dirname, 'FILES/thumbnails')));
+app.use(express.static(path.join(__dirname, '../FRONTEND')));
+
+// Route pour servir le frontend
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../FRONTEND/pokedex-frontend.html'));
+});
+
+// Route pour obtenir tous les pokemons
+app.get('/api/pokemon', (req, res) => {
+    fs.readFile(POKEDEX_SRC, 'utf8', (err, data) => {
         if (err) {
             console.error("Erreur de lecture du fichier :", err);
             res.status(500).send("Erreur serveur : impossible de lire le pokedex.");
         } else {
             try {
                 const pokedex = JSON.parse(data);
-                const total = pokedex.length - 1;
-                const randomIndex = Math.floor(Math.random() * total);
-                const randomPokemon = pokedex[randomIndex];
-                console.log(randomIndex);
-                res.json(randomPokemon);
+                res.json(pokedex);
             } catch (parseError) {
                 console.error("Erreur de parsing JSON :", parseError);
                 res.status(500).send("Erreur serveur : format JSON invalide.");
@@ -48,7 +53,7 @@ app.get('/hasard', (req, res) => {
     });
 });
 
-app.get('/pokemon/id/:id', (req, res) => {
+app.get('/api/pokemon/id/:id', (req, res) => {
     const id = parseInt(req.params.id);
 
     // Vérification de l'ID
@@ -79,7 +84,7 @@ app.get('/pokemon/id/:id', (req, res) => {
         }
     });
 });
-app.get('/pokemon/nom/:name', (req, res) => {
+app.get('/api/pokemon/nom/:name', (req, res) => {
     const name = req.params.name.toLowerCase();
 
     fs.readFile(POKEDEX_SRC, 'utf8', (err, data) => {
@@ -105,6 +110,36 @@ app.get('/pokemon/nom/:name', (req, res) => {
         }
     });
 });
+app.get('/api/pokemon/hasard/:nbr', (req, res) => {
+    fs.readFile(POKEDEX_SRC, 'utf8', (err, data) => {
+        let nbr = 1;
+        if (typeof parseInt(req.params.nbr) !== 'undefined' && parseInt(req.params.nbr) > 0)  
+        {
+            nbr = parseInt(req.params.nbr);
+        }
+        if (err) {
+            console.error("Erreur de lecture du fichier :", err);
+            return res.status(500).send("Erreur serveur : impossible de lire le pokedex.");
+        }
+
+        try {
+            const pokedex = JSON.parse(data);
+            const total = pokedex.length;
+            let randomPokemon = [];
+            for (let i=1; i<=nbr;i++)
+            {
+                const randomIndex = Math.floor(Math.random() * total);
+                randomPokemon.push(pokedex[randomIndex]);
+            }
+
+            res.json(randomPokemon);
+        } catch (parseError) {
+            console.error("Erreur de parsing JSON :", parseError);
+            res.status(500).send("Erreur serveur : format JSON invalide.");
+        }
+    });
+});
+
 // Lancement du serveur et attendre
 app.listen(
 	PORT,
