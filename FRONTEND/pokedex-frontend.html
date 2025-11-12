@@ -14,41 +14,88 @@
         </header>
 
         <div class="search-container">
-            <div class="search-tabs">
-                <button class="tab-btn active" data-tab="all">Tous les Pokémon</button>
-                <button class="tab-btn" data-tab="id">Recherche par ID</button>
-                <button class="tab-btn" data-tab="name">Recherche par Nom</button>
-                <button class="tab-btn" data-tab="random">Pokémon Aléatoire</button>
+            <!-- Catégories principales -->
+            <div class="category-tabs">
+                <button class="category-btn active" onclick="showCategory('pokemon')">Pokémons</button>
+                <button class="category-btn" onclick="showCategory('items')">Items</button>
             </div>
 
-            <div id="tab-all" class="search-content active">
-                <button onclick="loadAllPokemon()">Charger tous les Pokémon</button>
-            </div>
+            <!-- Onglets pour Pokémons -->
+            <div id="pokemon-category" class="category-content active">
+                <div class="search-tabs">
+                    <button class="tab-btn active" data-tab="tab-pok-all" onclick="loadAllPokemon()">Charger tous les Pokémon</button>
+                    <button class="tab-btn" data-tab="pok-id">Recherche par ID</button>
+                    <button class="tab-btn" data-tab="pok-name">Recherche par Nom</button>
+                    <button class="tab-btn" data-tab="pok-type">Recherche par Type</button>
+                    <button class="tab-btn" data-tab="pok-random">Pokémon Aléatoire</button>
+                </div>
 
-            <div id="tab-id" class="search-content">
-                <div class="input-group">
-                    <input type="number" id="search-id" placeholder="Entrez un ID (ex: 25)" min="1">
-                    <button onclick="searchById()">Rechercher</button>
+                <div id="tab-pok-all" class="search-content active">
+                    <button onclick="loadAllPokemon()">Charger tous les Pokémon</button>
+                </div>
+
+                <div id="pok-id" class="search-content">
+                    <div class="input-group">
+                        <input type="number" id="search-id" placeholder="Entrez un ID (ex: 25)" min="1">
+                        <button onclick="searchPokemonById()">Rechercher</button>
+                    </div>
+                </div>
+
+                <div id="pok-name" class="search-content">
+                    <div class="input-group">
+                        <input type="text" id="search-name" placeholder="Entrez un nom (ex: Pikachu)">
+                        <button onclick="searchPokemonByName()">Rechercher</button>
+                    </div>
+                </div>
+
+                <div id="pok-type" class="search-content">
+                    <div class="input-group">
+                        <input type="text" id="search-type" placeholder="Entrez un type (ex: Feu, Eau, Fire, Water...)">
+                        <button onclick="searchPokemonByType()">Rechercher</button>
+                    </div>
+                </div>
+
+                <div id="pok-random" class="search-content">
+                    <div class="input-group">
+                        <input type="number" id="random-count" placeholder="Nombre de Pokémon (ex: 6)">
+                        <button onclick="getRandomPokemon()">Générer</button>
+                    </div>
                 </div>
             </div>
 
-            <div id="tab-name" class="search-content">
-                <div class="input-group">
-                    <input type="text" id="search-name" placeholder="Entrez un nom (ex: Pikachu)">
-                    <button onclick="searchByName()">Rechercher</button>
+            <!-- Onglets pour Items -->
+            <div id="items-category" class="category-content">
+                <div class="search-tabs">
+                    <button class="tab-btn active" data-tab="item-random">Item Aléatoire</button>
+                    <button class="tab-btn" data-tab="item-id">Recherche par ID</button>
+                    <button class="tab-btn" data-tab="item-name">Recherche par Nom</button>
                 </div>
-            </div>
 
-            <div id="tab-random" class="search-content">
-                <div class="input-group">
-                    <input type="number" id="random-count" placeholder="Nombre de Pokémon (ex: 6)">
-                    <button onclick="getRandomPokemon()">Générer</button>
+                <div id="item-random" class="search-content active">
+                    <div class="input-group">
+                        <input type="number" id="random-item-count" placeholder="Nombre d'items (ex: 3)">
+                        <button onclick="getRandomItems()">Générer</button>
+                    </div>
+                </div>
+
+                <div id="item-id" class="search-content">
+                    <div class="input-group">
+                        <input type="number" id="search-item-id" placeholder="Entrez un ID">
+                        <button onclick="searchItemById()">Rechercher</button>
+                    </div>
+                </div>
+
+                <div id="item-name" class="search-content">
+                    <div class="input-group">
+                        <input type="text" id="search-item" placeholder="Entrez un nom (ex: Potion)">
+                        <button onclick="searchByItem()">Rechercher</button>
+                    </div>
                 </div>
             </div>
 
             <div class="json-link-container">
                 <div id="json-link">
-                    Lien API: <a href="#" target="_blank">Aucune requête effectuée</a>
+                    Lien API: <a href="#" class="linkToCopy" target="_blank">Aucune requête effectuée</a><button class = "clipboard" onclick="copierTexte()">&#x1F4CB</button>
                 </div>
             </div>
         </div>

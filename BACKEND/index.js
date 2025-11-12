@@ -4,8 +4,12 @@
 
 // Définir l'emplacement des fichiers bases de données
 const POKEDEX_SRC = "./DATA/pokedex.json";
+// Définir l'emplacement des items
+const ITEMS_SRC = "./DATA/items.json";
 // Définir l'emplacement des images
 const IMAGES_SRC = "./FILES/images";
+// Définir l'emplacement des types
+const TYPES_SRC = "./DATA/types.json";
 // Définir un port
 const PORT = 5001;
 // ************************************************
@@ -110,6 +114,69 @@ app.get('/api/pokemon/nom/:name', (req, res) => {
         }
     });
 });
+
+app.get('/api/pokemon/type/:type', (req, res) => {
+    const type = req.params.type.toLowerCase();
+
+    fs.readFile(POKEDEX_SRC, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Erreur de lecture du fichier :", err);
+            return res.status(500).send("Erreur serveur.");
+        }
+
+        try {
+            const pokedex = JSON.parse(data);
+            const typesData = require(TYPES_SRC);
+
+            // Mpping si recherche en francais
+            const typeMapping = {
+                "combat":"fighting",
+                "vol":"flying",
+                "sol":"ground",
+                "roche":"rock",
+                "insecte":"bug",
+                "spectre":"ghost",
+                "acier":"steel",
+                "feu":"fire",
+                "eau":"water",
+                "plante":"grass",
+                "electrique":"electric",
+                "psychique":"psychic",
+                "glace":"ice",
+                "tenebres":"dark",
+                "fee":"fairy"
+            }
+
+            let searchType = type;
+
+            if (typeMapping[type]) {
+                searchType = typeMapping[type];
+            }
+
+            // Utilisation de types.json pour la recherche des types en chinois/japonais
+            const foundType = typesData.find(t => 
+                t.english.toLowerCase() === searchType||
+                t.chinese === searchType||
+                t.japanese === searchType
+            )
+
+            searchType = foundType ? foundType.english.toLowerCase() : searchType;
+
+            // Recherche les pokemon ayant le type recherché
+            const pokemon = pokedex.filter(p => p.type.some(t => t.toLowerCase().includes(searchType)));
+
+            if (pokemon.length) {
+                res.json(pokemon);
+            } else {
+                res.status(404).send("Aucun Pokémon trouvé avec ce type.");
+            }
+        } catch (parseError) {
+            console.error("Erreur de parsing JSON :", parseError);
+            res.status(500).send("Erreur de format JSON.");
+        }
+    });
+});
+
 app.get('/api/pokemon/hasard/:nbr', (req, res) => {
     fs.readFile(POKEDEX_SRC, 'utf8', (err, data) => {
         let nbr = 1;
@@ -136,6 +203,73 @@ app.get('/api/pokemon/hasard/:nbr', (req, res) => {
         } catch (parseError) {
             console.error("Erreur de parsing JSON :", parseError);
             res.status(500).send("Erreur serveur : format JSON invalide.");
+        }
+    });
+});
+
+app.get('/api/objet', (req, res) => {
+    fs.readFile(ITEMS_SRC, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Erreur de lecture du fichier :", err);
+            res.status(500).send("Erreur serveur : impossible de lire le pokedex.");
+        } else {
+            try {
+                const items = JSON.parse(data);
+                res.json(items);
+            } catch (parseError) {
+                console.error("Erreur de parsing JSON :", parseError);
+                res.status(500).send("Erreur serveur : format JSON invalide.");
+            }
+        }
+    });
+});
+
+app.get('/api/objet/nom/:name', (req, res) => {
+    const itemName = req.params.name.toLowerCase();
+    
+    fs.readFile(ITEMS_SRC, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Erreur de lecture du fichier :", err);
+            return res.status(500).send("Erreur serveur.");
+        }
+        
+        try {
+            const items = JSON.parse(data);
+            const item = items.find(i => i.name?.toLowerCase() === itemName);
+            
+            if (item) {
+                res.json(item);
+            } else {
+                res.status(404).send("Item non trouvé avec ce nom.");
+            }
+        } catch (parseError) {
+            console.error("Erreur de parsing JSON :", parseError);
+            res.status(500).send("Erreur de format JSON.");
+        }
+    });
+});
+
+app.get('/api/objet/id/:id', (req, res) => {
+    const itemID = req.params.id.toLowerCase();
+    
+    fs.readFile(ITEMS_SRC, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Erreur de lecture du fichier :", err);
+            return res.status(500).send("Erreur serveur.");
+        }
+        
+        try {
+            const items = JSON.parse(data);
+            const item = items.find(i => i.id === itemID);
+            
+            if (item) {
+                res.json(item);
+            } else {
+                res.status(404).send("Item non trouvé avec cet id.");
+            }
+        } catch (parseError) {
+            console.error("Erreur de parsing JSON :", parseError);
+            res.status(500).send("Erreur de format JSON.");
         }
     });
 });

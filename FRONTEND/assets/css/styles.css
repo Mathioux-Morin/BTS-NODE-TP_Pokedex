@@ -86,6 +86,10 @@ p {
     display: block;
 }
 
+#tab-all {
+    padding-bottom: 19px;
+}
+
 .json-link-container {
   background-color: black;
   padding: 10px;
