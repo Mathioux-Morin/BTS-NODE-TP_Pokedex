@@ -86,6 +86,16 @@ p {
     display: block;
 }
 
+/* Affichage des catégories principales (Pokémon / Items) */
+.category-content {
+    display: none;
+    margin-top: 15px;
+}
+
+.category-content.active {
+    display: block;
+}
+
 #tab-all {
     padding-bottom: 19px;
 }

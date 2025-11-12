@@ -24,14 +24,10 @@
             <div id="pokemon-category" class="category-content active">
                 <div class="search-tabs">
                     <button class="tab-btn active" data-tab="tab-pok-all" onclick="loadAllPokemon()">Charger tous les Pokémon</button>
-                    <button class="tab-btn" data-tab="pok-id">Recherche par ID</button>
                     <button class="tab-btn" data-tab="pok-name">Recherche par Nom</button>
+                    <button class="tab-btn" data-tab="pok-id">Recherche par ID</button>
                     <button class="tab-btn" data-tab="pok-type">Recherche par Type</button>
                     <button class="tab-btn" data-tab="pok-random">Pokémon Aléatoire</button>
-                </div>
-
-                <div id="tab-pok-all" class="search-content active">
-                    <button onclick="loadAllPokemon()">Charger tous les Pokémon</button>
                 </div>
 
                 <div id="pok-id" class="search-content">
@@ -66,9 +62,10 @@
             <!-- Onglets pour Items -->
             <div id="items-category" class="category-content">
                 <div class="search-tabs">
-                    <button class="tab-btn active" data-tab="item-random">Item Aléatoire</button>
-                    <button class="tab-btn" data-tab="item-id">Recherche par ID</button>
+                    <button class="tab-btn active" data-tab="tab-pok-all" onclick="loadAllItems()">Charger tous les objets</button>
                     <button class="tab-btn" data-tab="item-name">Recherche par Nom</button>
+                    <button class="tab-btn" data-tab="item-id">Recherche par ID</button>
+                    <button class="tab-btn active" data-tab="item-random">Item Aléatoire</button>
                 </div>
 
                 <div id="item-random" class="search-content active">
@@ -87,8 +84,8 @@
 
                 <div id="item-name" class="search-content">
                     <div class="input-group">
-                        <input type="text" id="search-item" placeholder="Entrez un nom (ex: Potion)">
-                        <button onclick="searchByItem()">Rechercher</button>
+                        <input type="text" id="search-item" placeholder="Entrez un nom (ex: Super Potion)">
+                        <button onclick="searchItemByName()">Rechercher</button>
                     </div>
                 </div>
             </div>

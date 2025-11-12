@@ -211,7 +211,7 @@ app.get('/api/objet', (req, res) => {
     fs.readFile(ITEMS_SRC, 'utf8', (err, data) => {
         if (err) {
             console.error("Erreur de lecture du fichier :", err);
-            res.status(500).send("Erreur serveur : impossible de lire le pokedex.");
+            res.status(500).send("Erreur serveur : impossible de lire la liste des objets.");
         } else {
             try {
                 const items = JSON.parse(data);
@@ -235,7 +235,12 @@ app.get('/api/objet/nom/:name', (req, res) => {
         
         try {
             const items = JSON.parse(data);
-            const item = items.find(i => i.name?.toLowerCase() === itemName);
+            // Utiliser des vérifications sûres car certains objets n'ont pas toutes les langues
+            const item = items.find(i =>
+                (i.name.english.toLowerCase() === itemName) ||
+                (i.name.chinese === itemName) ||
+                (i.name.japanese === itemName)
+            );
             
             if (item) {
                 res.json(item);
@@ -250,8 +255,12 @@ app.get('/api/objet/nom/:name', (req, res) => {
 });
 
 app.get('/api/objet/id/:id', (req, res) => {
-    const itemID = req.params.id.toLowerCase();
+    const itemID = parseInt(req.params.id);
     
+    if (isNaN(itemID) || itemID < 1) {
+        return res.status(400).send("ID invalide. Utilisez un entier positif.");
+    }
+
     fs.readFile(ITEMS_SRC, 'utf8', (err, data) => {
         if (err) {
             console.error("Erreur de lecture du fichier :", err);

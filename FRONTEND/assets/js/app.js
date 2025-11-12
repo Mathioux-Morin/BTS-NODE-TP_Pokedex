@@ -3,27 +3,47 @@ const API_URL = 'http://172.16.198.254:5001';
 // Gestion des catégories principales (Pokémons / Items)
 function showCategory(category) {
     // Masquer toutes les catégories
-    document.getElementById('pokemon-category').classList.remove('active');
-    document.getElementById('items-category').classList.remove('active');
-    
-    // Masquer tous les contenus de recherche
-    document.querySelectorAll('.search-content').forEach(c => c.classList.remove('active'));
-    
-    // Afficher la catégorie sélectionnée
+    document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
+    // Désactiver les boutons de catégorie
+    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+
+    // Afficher la catégorie sélectionnée et activer le premier onglet de cette catégorie
     if (category === 'pokemon') {
-        document.getElementById('pokemon-category').classList.add('active');
-        // Afficher le premier onglet de contenu des pokémons
-        const firstPokemonTab = document.querySelector('#pokemon-category .search-content');
-        if (firstPokemonTab) firstPokemonTab.classList.add('active');
+        const pokCat = document.getElementById('pokemon-category');
+        if (pokCat) {
+            pokCat.classList.add('active');
+            const firstTab = pokCat.querySelector('.tab-btn');
+            // Réinitialiser onglets internes
+            pokCat.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            pokCat.querySelectorAll('.search-content').forEach(c => c.classList.remove('active'));
+            if (firstTab) {
+                firstTab.classList.add('active');
+                const tabName = firstTab.dataset.tab;
+                const tabEl = document.getElementById(tabName);
+                if (tabEl) tabEl.classList.add('active');
+            }
+        }
+        // activer le bouton catégorie correspondant (suppose ordre pokemon, items)
+        const catBtns = document.querySelectorAll('.category-btn');
+        if (catBtns[0]) catBtns[0].classList.add('active');
     } else if (category === 'items') {
-        document.getElementById('items-category').classList.add('active');
-        // Charger tous les items directement quand on clique sur Items
-        loadAllItems();
+        const itmCat = document.getElementById('items-category');
+        if (itmCat) {
+            itmCat.classList.add('active');
+            const firstTab = itmCat.querySelector('.tab-btn');
+            // Réinitialiser onglets internes
+            itmCat.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            itmCat.querySelectorAll('.search-content').forEach(c => c.classList.remove('active'));
+            if (firstTab) {
+                firstTab.classList.add('active');
+                const tabName = firstTab.dataset.tab;
+                const tabEl = document.getElementById(tabName);
+                if (tabEl) tabEl.classList.add('active');
+            }
+        }
+        const catBtns = document.querySelectorAll('.category-btn');
+        if (catBtns[1]) catBtns[1].classList.add('active');
     }
-    
-    // Marquer le bouton de catégorie comme actif
-    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
 }
 
 // Gestion des onglets avec les data-tab
@@ -79,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gestion des touches Enter pour Items
     const randomItemCountInput = document.getElementById('random-item-count');
     const searchItemIdInput = document.getElementById('search-item-id');
-    const searchItemInput = document.getElementById('search-item');
+    const searchItemNameInput = document.getElementById('search-item');
     
     if (randomItemCountInput) randomItemCountInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') getRandomItems();
@@ -89,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') searchItemById();
     });
     
-    if (searchItemInput) searchItemInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') searchByItem();
+    if (searchItemNameInput) searchItemNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchItemByName();
     });
 });
 
@@ -111,17 +131,24 @@ function updateJsonLink(url) {
 }
 
 function copierTexte() {
-      // Récupère l'élément contenant le texte
-      const texte = document.getElementById("linkToCopy").innerText;
-
-      // Utilise l'API du presse-papiers pour copier le texte
-      navigator.clipboard.writeText(texte)
-        .then(() => {
-          alert("Texte copié dans le presse-papiers !");
-        })
-        .catch(err => {
-          alert("Erreur lors de la copie : " + err);
-        });
+            // Copier le lien JSON affiché dans le conteneur
+            const linkEl = document.querySelector('#json-link a');
+            const texte = linkEl ? linkEl.textContent || linkEl.href : '';
+            if (!texte) return alert('Aucun lien à copier');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texte)
+                    .then(() => { alert('Lien copié dans le presse-papiers !'); })
+                    .catch(err => { alert('Erreur lors de la copie : ' + err); });
+            } else {
+                // fallback
+                const tmp = document.createElement('textarea');
+                tmp.value = texte;
+                document.body.appendChild(tmp);
+                tmp.select();
+                try { document.execCommand('copy'); alert('Lien copié dans le presse-papiers !'); }
+                catch (e) { alert('Impossible de copier : ' + e); }
+                document.body.removeChild(tmp);
+            }
     }
 
 function createPokemonCard(pokemon) {
@@ -303,16 +330,14 @@ async function searchItemById() {
     }
 
     showLoading();
-    const url = `${API_URL}/api/objet`;
+    const url = `${API_URL}/api/objet/id/${id}`;
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Erreur de chargement');
         const data = await response.json();
-        
-        // Chercher l'item par ID
-        const item = data.find(i => i.id == id);
-        if (item) {
-            displayItems([item]);
+        console.log('Item data:', data);
+        if (data) {
+            displayItems([data]);
         } else {
             showError(`Aucun item trouvé avec l'ID ${id}`);
             document.getElementById('results').innerHTML = '';
@@ -325,23 +350,20 @@ async function searchItemById() {
 }
 
 async function searchItemByName() {
-    const name = document.getElementByName('search-item-id').value;
+    const name = document.getElementById('search-item').value.trim();
     if (!name) {
         showError('Veuillez entrer un nom');
         return;
     }
 
     showLoading();
-    const url = `${API_URL}/api/objet`;
+    const url = `${API_URL}/api/objet/nom/${encodeURIComponent(name)}`;
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Erreur de chargement');
         const data = await response.json();
-        
-        // Chercher l'item par ID
-        const item = data.find(i => i.name == name);
-        if (item) {
-            displayItems([item]);
+        if (data) {
+            displayItems([data]);
         } else {
             showError(`Aucun item trouvé avec le nom ${name}`);
             document.getElementById('results').innerHTML = '';
@@ -356,7 +378,7 @@ async function searchItemByName() {
 async function getRandomItems() {
     const count = document.getElementById('random-item-count').value || 3;
     showLoading();
-    const url = `${API_URL}/api/objet`;
+    const url = `${API_URL}/api/objet/hasard/${count}`;
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Erreur de chargement');
@@ -386,9 +408,8 @@ function displayItems(items) {
     
     resultsContainer.innerHTML = items.map(item => `
         <div class="item-card">
-            <h3>${item.name || 'Item'}</h3>
-            <p><strong>Description:</strong> ${item.description || 'N/A'}</p>
-            <p><strong>Effet:</strong> ${item.effect || 'N/A'}</p>
+            <h3>${item.name.english || 'Item'}</h3>
+            <p1>#${item.id || 'N/A'}</p1>
         </div>
     `).join('');
 }
